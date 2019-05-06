@@ -33,7 +33,11 @@ passport.use(new SteamStrategy({
 ));
 
 router.get('/steam',
-  passport.authenticate('steam'),
+  passport.authenticate('steam', { session: false }, (err, passportUser, info) =>{
+    console.log(err);
+    console.log(passportUser);
+    console.log(info);
+  }),
   function(req, res) {
       console.log('get /steam');
     // The request will be redirected to Steam for authentication, so
