@@ -8,8 +8,6 @@ const SteamStrategy = require('passport-steam').Strategy;
 
 router.use(passport.initialize())
 
-
-
 passport.use(new SteamStrategy({
     returnURL: 'http://localhost:8801/user/steam/return',
     realm: 'http://localhost:8801/user/',
@@ -24,24 +22,25 @@ passport.use(new SteamStrategy({
         profile_url: profile._json.profileurl,
         avatar: profile._json.avatar,
     }
-    // console.log(user);
     return done(null,user);
-    // User.findByOpenID({ openId: identifier }, function (err, user) {
-    //   return done(err, user);
-    // });
   }
 ));
 
+passport.serializeUser(function(user, done) {
+  done(null, user.openid);
+  // console.log(user);
+});
+
+passport.deserializeUser(function(id, done) {
+  // User.findById(id, function(err, user) {
+  //     done(err, user);
+  // });
+});
+
 router.get('/steam',
-  passport.authenticate('steam', { session: false }, (err, passportUser, info) =>{
-    console.log(err);
-    console.log(passportUser);
-    console.log(info);
-  }),
+  passport.authenticate('steam', { session: false }),
   function(req, res) {
       console.log('get /steam');
-    // The request will be redirected to Steam for authentication, so
-    // this function will not be called.
   });
 
 router.get('/steam/return',
@@ -49,7 +48,6 @@ router.get('/steam/return',
   function(req, res) {
     console.log(req.user)
     console.log('get /steam/return');
-    // Successful authentication, redirect home.
     res.redirect('/');
   });
 
