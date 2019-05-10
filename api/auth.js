@@ -22,6 +22,8 @@ passport.use(new SteamStrategy({
         profile_url: profile._json.profileurl,
         avatar: profile._json.avatar,
     }
+    // save user to db
+    
     return done(null,user);
   }
 ));
@@ -38,13 +40,21 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.get('/steam',
-  passport.authenticate('steam', { session: false }),
+  passport.authenticate('steam', {
+    successRedirect: '/success',
+    failureRedirect: '/fail',
+    session: false
+  }),
   function(req, res) {
       console.log('get /steam');
   });
 
 router.get('/steam/return',
-  passport.authenticate('steam', { failureRedirect: '/user/steam' }),
+  passport.authenticate('steam', {
+    successRedirect: '/success',
+    failureRedirect: '/fail',
+    session: false
+  }),
   function(req, res) {
     console.log(req.user)
     console.log('get /steam/return');
