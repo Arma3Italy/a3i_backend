@@ -3,7 +3,7 @@ const app = express();
 const cfg = require('../config');
 
 app.use('/server',require('../api/server'));
-app.use('/user',require('../api/user'));
+app.use('/auth',require('../api/auth'));
 
 app.listen(cfg.server.port, () => {
     console.log(`[SERVER] > Server started on ${cfg.server.port}`);
