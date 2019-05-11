@@ -6,8 +6,6 @@ console.log('[EXPRESS] > auth route');
 
 const passportConfig = require('../config/passport.js');
 
-
-
 router.use(passport.initialize());
 passportConfig();
 
@@ -16,13 +14,8 @@ router.get('/steam',
 );
 
 router.get('/steam/return',
+  passport.authenticate('steam'),
   function(req, res) {
-    console.log(req.session)
-    console.log("-------------------")
-    console.log(req.user)
-    console.log("-------------------")
-    console.log(req.passport)
-    console.log("-------------------")
     console.log('[PASSPORT] > (GET /auth/steam/return) next function');
     res.json({ status: "OK" });
   });
