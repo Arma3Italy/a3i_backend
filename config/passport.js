@@ -2,8 +2,6 @@ const passport = require('passport');
 const SteamStrategy = require('passport-steam').Strategy;
 const cfg = require('../config.js');
 
-console.log('[PASSPORT] > passportConfig');
-
 function passportConfig() {
   passport.use(new SteamStrategy({
     returnURL: 'http://localhost:8801/auth/steam/return',
@@ -19,6 +17,7 @@ function passportConfig() {
         dateTest: profile._json.lastlogoff,
         profile_url: profile._json.profileurl,
         avatar: profile._json.avatar,
+        sessions: []
     }
     // save user to db
     
@@ -28,7 +27,6 @@ function passportConfig() {
 
   passport.serializeUser(function(user, done) {
     done(null, user.openid);
-    console.log('[PASSPORT] > serializeUser');
   // console.log(user);
   });
 
