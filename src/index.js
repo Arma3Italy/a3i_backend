@@ -5,7 +5,7 @@ const { server: { port, sessionKey } } = require('../config.js');
 
 app.use(session({
     secret: sessionKey,
-    saveUninitialized: true,
+    saveUninitialized: false,
     resave: false,
     cookie: {
         httpOnly: true,

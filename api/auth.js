@@ -18,7 +18,6 @@ router.get('/steam', steamLogin.authenticate());
 
 router.get('/steam/return', steamLogin.verify(), (req, res) => {
   const token = signsession(req.sessionID);
-  console.log(req.user)
 
   res.json({
     sessionID: req.sessionID,
