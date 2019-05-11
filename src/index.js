@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
-const cfg = require('../config');
+const { server: { port, sessionKey } } = require('../config.js');
 
 app.use(session({
-    secret: 'gz3g35z3fz5gz43h6365u3fgz',
+    secret: sessionKey,
     saveUninitialized: true,
     resave: false,
     cookie: {
@@ -16,6 +16,6 @@ app.use(session({
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
 
-app.listen(cfg.server.port, () => {
-    console.log(`[SERVER] > Server started on ${cfg.server.port}`);
+app.listen(port, () => {
+    console.log(`[SERVER] > Server started on ${port}`);
 });

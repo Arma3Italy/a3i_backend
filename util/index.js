@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const KEY = 'sadfg43t43tv23tf';
+const { server: { signKey } } = require('../config.js');
 
 function signsession(sessionid) {
-    const hmac = crypto.createHmac('sha256', KEY);
+    const hmac = crypto.createHmac('sha256', signKey);
     const hash = hmac.update(sessionid).digest('hex');
     const token = Buffer.from(`${sessionid}.${hash}`).toString('base64');
 
