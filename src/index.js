@@ -1,8 +1,17 @@
 const express = require('express');
 const app = express();
+const session = require('express-session');
 const cfg = require('../config');
 
-console.log('[EXPRESS] > app starter');
+app.use(session({
+    secret: 'gz3g35z3fz5gz43h6365u3fgz',
+    saveUninitialized: true,
+    resave: false,
+    cookie: {
+        httpOnly: true,
+        secure: false
+    }
+}));
 
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
