@@ -24,7 +24,7 @@ router.get('/steam/return', steamLogin.verify(), (req, res) => {
     avatar: req.user.avatar.medium
   });
 
-  user.newSession(req.sessionID);
+  user.newSession(req.sessionID,'23.65.179.92');
 
   res.json({
     sessionID: req.sessionID,

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { signsession } = require('../util');
 
-const Session = new Schema({
+const SessionSchema = new Schema({
     token: {
         type: String,
         required: true,
@@ -45,13 +45,22 @@ const UserSchema = new Schema({
         default: Date.now,
     },
     sessions: { 
-        type: [Session],
+        type: [SessionSchema],
         required: false,
     },
 });
 
-UserSchema.methods.newSession = function (sessionID) {
+UserSchema.methods.newSession = function (sessionID, ip) {
     const token = signsession(sessionID);
+
+    const session = new SessionSchema({
+        token,
+        ip,
+    });
+
+    this.sessions.push(session);
+
+    return;
 }
 
 const UserModel = mongoose.model('User', UserSchema);
