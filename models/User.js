@@ -20,6 +20,8 @@ const SessionSchema = new Schema({
     },
 });
 
+const SessionModel = mongoose.model('Session', SessionSchema);
+
 const UserSchema = new Schema({
     steamid: {
         type: String,
@@ -53,7 +55,7 @@ const UserSchema = new Schema({
 UserSchema.methods.newSession = function (sessionID, ip) {
     const token = signsession(sessionID);
 
-    const session = new SessionSchema({
+    const session = new SessionModel({
         token,
         ip,
     });
