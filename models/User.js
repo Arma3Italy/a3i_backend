@@ -62,7 +62,7 @@ UserSchema.methods.newSession = function (sessionID, ip) {
 
     this.sessions.push(session);
 
-    return;
+    return token;
 }
 
 const UserModel = mongoose.model('User', UserSchema);
