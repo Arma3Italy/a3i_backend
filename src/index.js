@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const session = require('express-session');
-const { server: { port, sessionKey } } = require('../config.js');
+const mongoose = require('mongoose');
+const { server: { port, sessionKey, mongoUri } } = require('../config.js');
 
 app.use(session({
     secret: sessionKey,
@@ -12,6 +13,8 @@ app.use(session({
         secure: false
     }
 }));
+
+mongoose.connect(mongoUri, { useNewUrlParser: true });
 
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
