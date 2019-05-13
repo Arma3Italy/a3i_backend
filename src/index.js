@@ -14,7 +14,10 @@ app.use(session({
     }
 }));
 
-mongoose.connect(mongoUri, { useNewUrlParser: true });
+mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+});
 
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
