@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
   res.json({
     sessionID: req.sessionID,
     session: req.session,
-    user: req.user
+    cookie: req.cookies
   });
 });
 
@@ -24,13 +24,19 @@ router.get('/steam/return', steamLogin.verify(), (req, res) => {
     avatar: req.user.avatar.medium
   });
 
-  user.newSession(req.sessionID,'23.65.179.92');
+  const token = user.newSession(req.sessionID,'23.65.179.92');
+
+  user.save();
+
+  // res.cookie('authToken', token, { domain: '.example.com', path: '/admin', secure: true, expires: new Date(Date.now() + 900000), });
+  res.cookie('authToken', token,);
+  req.session.a3i_user = user;
 
   res.json({
     sessionID: req.sessionID,
-    session: req.session,
     token,
-    user
+    session: req.session,
+    // user
   });
 });
 
