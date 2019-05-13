@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { signsession } = require('../util');
 const steamLogin = require('steam-login');
 const { steam: steamcfg } = require('../config.js');
+const UserModel = require('../models/User.js');
 
 router.use(steamLogin.middleware(steamcfg));
 
@@ -17,13 +17,20 @@ router.get('/', (req, res) => {
 router.get('/steam', steamLogin.authenticate());
 
 router.get('/steam/return', steamLogin.verify(), (req, res) => {
-  const token = signsession(req.sessionID);
+  const user = new UserModel({
+    steamid: req.user._json.steamid,
+    name: req.user._json.personaname,
+    url: req.user._json.profileurl,
+    avatar: req.user.avatar.medium
+  });
+
+  user.newSession(req.sessionID);
 
   res.json({
     sessionID: req.sessionID,
     session: req.session,
     token,
-    user: req.user
+    user
   });
 });
 

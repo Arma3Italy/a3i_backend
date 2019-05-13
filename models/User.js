@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { signsession } = require('../util');
 
 const Session = new Schema({
     token: {
@@ -26,7 +27,7 @@ const UserSchema = new Schema({
         index: true,
         unique: true,
     },
-    user: {
+    name: {
         type: String,
         required: true,
     },
@@ -48,6 +49,10 @@ const UserSchema = new Schema({
         required: false,
     },
 });
+
+UserSchema.methods.newSession = function (sessionID) {
+    const token = signsession(sessionID);
+}
 
 const UserModel = mongoose.model('User', UserSchema);
 module.exports = UserModel;
