@@ -4,7 +4,8 @@ module.exports = {
     server: {
         port: 8801,
         signKey: 'JA00FOg$u2dhF6m2siAnuVYu4xR1bO@k',
-        sessionKey: 'DS@7rfvsq70XSPyoZ3bjdpKOiM3UE8OR'
+        sessionKey: 'DS@7rfvsq70XSPyoZ3bjdpKOiM3UE8OR',
+        mongoUri: 'mongodb+srv://admin:admin@arma3italy-eufgo.mongodb.net/test?retryWrites=true'
     },
     steam: {
         verify: 'http://localhost:8801/auth/steam/return',
