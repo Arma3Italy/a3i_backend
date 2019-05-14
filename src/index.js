@@ -19,6 +19,9 @@ app.use(session({
 mongoose.connect(mongoUri, {
     useNewUrlParser: true,
     useCreateIndex: true,
+}, (err) => {
+    if (err) return console.log(err);
+    console.log('[SERVER] > Connected to mongodb');
 });
 
 app.use('/server',require('../api/server'));
