@@ -17,6 +17,15 @@ router.get('/', (req, res) => {
 router.get('/steam', steamLogin.authenticate());
 
 router.get('/steam/return', steamLogin.verify(), (req, res) => {
+  const steamid = req.user._json.steamid;
+
+  return UserModel.findOne({ steamid }).exec((err, usr) => {
+    if (err) res.json({ err });
+    res.json({ usr });
+  });
+
+  return res.json({ calmo: 'ok' });
+
   const user = new UserModel({
     steamid: req.user._json.steamid,
     name: req.user._json.personaname,
@@ -24,7 +33,7 @@ router.get('/steam/return', steamLogin.verify(), (req, res) => {
     avatar: req.user.avatar.medium
   });
 
-  const token = user.newSession(req.sessionID,'23.65.179.92');
+  const token = user.newSession(req.sessionID,'0.0.0.0');
 
   user.save();
 
