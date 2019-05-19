@@ -4,6 +4,7 @@ const session = require('express-session');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser')
 const { server: { port, sessionKey, mongoUri } } = require('../config.js');
+const { devLog } = require('../util');
 
 app.use(cookieParser());
 app.use(session({
@@ -21,12 +22,12 @@ mongoose.connect(mongoUri, {
     useCreateIndex: true,
 }, (err) => {
     if (err) return console.log(err);
-    console.log('[SERVER] > Connected to mongodb');
+    devLog('SERVER','Connected to mongodb');
 });
 
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
 
 app.listen(port, () => {
-    console.log(`[SERVER] > Server started on ${port}`);
+    devLog('SERVER',`Server started on ${port}`);
 });
