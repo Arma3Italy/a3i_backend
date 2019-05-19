@@ -14,6 +14,8 @@ app.use(session({
     cookie: {
         httpOnly: true,
         secure: false,
+        // maxAge: 30000,
+        // expires: new Date(Date.now() + 30000),
     }
 }));
 
