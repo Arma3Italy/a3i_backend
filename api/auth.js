@@ -16,15 +16,17 @@ router.get('/', (req, res) => {
 
 router.get('/steam', steamLogin.authenticate());
 
-router.get('/steam/return', steamLogin.verify(), (req, res) => {
+router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   const steamid = req.user._json.steamid;
 
-  return UserModel.findOne({ steamid }).exec((err, usr) => {
-    if (err) res.json({ err });
-    res.json({ usr });
+  UserModel.findOne({ steamid }).exec((err, usr) => {
+    if (!err) {
+      req.user = usr;
+      return next();
+    };
   });
 
-  return res.json({ calmo: 'ok' });
+  console.log('[SERVER] > New User');
 
   const user = new UserModel({
     steamid: req.user._json.steamid,
@@ -33,10 +35,16 @@ router.get('/steam/return', steamLogin.verify(), (req, res) => {
     avatar: req.user.avatar.medium
   });
 
+  req.user = user;
+  next();
+ 
+}, (req, res) => {
+  console.log('[SERVER] > User loaded');
+
+  const user = req.user;
   const token = user.newSession(req.sessionID,'0.0.0.0');
 
   user.save();
-
   // res.cookie('authToken', token, { domain: '.example.com', path: '/admin', secure: true, expires: new Date(Date.now() + 900000), });
   res.cookie('authToken', token,);
   req.session.a3i_user = user;

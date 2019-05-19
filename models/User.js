@@ -60,6 +60,8 @@ UserSchema.methods.newSession = function (sessionID, ip) {
         ip,
     });
 
+    console.log(sessionID)
+
     this.sessions.push(session);
 
     return token;
