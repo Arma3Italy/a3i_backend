@@ -65,5 +65,12 @@ UserSchema.methods.newSession = function (sessionID, ip) {
     return token;
 }
 
+UserSchema.methods.checkToken = function (token) {
+    const session = this.sessions.filter(session => session.token === token);
+
+    if (session.length > 0) return { err: null, session, user: this };
+    return { err: 'No session found' };
+}
+
 const UserModel = mongoose.model('User', UserSchema);
 module.exports = UserModel;
