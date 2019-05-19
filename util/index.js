@@ -10,7 +10,7 @@ function signsession(sessionid) {
 }
 
 function devLog(type, msg) {
-    console.log(`[${type}] > ${msg}`)
+    console.log(`\x1b[33m[${type}] \x1b[31m> \x1b[0m${msg}`)
 }
 
 module.exports = { signsession, devLog }
