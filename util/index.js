@@ -9,4 +9,8 @@ function signsession(sessionid) {
     return token;
 }
 
-module.exports = { signsession }
+function devLog(type, msg) {
+    console.log(`[${type}] > ${msg}`)
+}
+
+module.exports = { signsession, devLog }
