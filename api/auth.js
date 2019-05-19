@@ -8,7 +8,7 @@ const { devLog } = require('../util');
 router.use(steamLogin.middleware(steamcfg));
 
 router.get('/', (req, res) => {
-  res.json({
+  return res.json({
     sessionID: req.sessionID,
     session: req.session,
     cookie: req.cookies
@@ -60,8 +60,15 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   });
 });
 
-router.get('/logout', steamLogin.enforceLogin('/'), (req, res) => {
-  req.logout();
+router.get('/logout', (req, res) => {
+  res.clearCookie('authToken');
+  // req.logout();
+
+  return res.json({
+    sessionID: req.sessionID,
+    session: req.session,
+    cookie: req.cookies
+  });
 });
 
 module.exports = router;
