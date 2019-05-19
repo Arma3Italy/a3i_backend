@@ -60,6 +60,31 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   });
 });
 
+router.get('/testAuth', (req, res) => {
+  const token = req.cookies.authToken;
+
+  UserModel.find().then(usr => {
+    usr.forEach(user => {
+      const check = user.checkToken(token);
+      return res.json({
+        token,
+        check,
+        sessionID: req.sessionID,
+        session: req.session,
+        cookie: req.cookies
+      });
+    });
+  })
+
+});
+
+router.get('/testSession', (req, res) => {
+  const token = "sadfasdfasfasdfasdfsaf";
+
+  res.cookie('authToken', token);
+  res.redirect('/auth');
+});
+
 router.get('/logout', (req, res) => {
   res.clearCookie('authToken');
   // req.logout();
