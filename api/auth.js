@@ -7,6 +7,25 @@ const { devLog } = require('../util');
 
 router.use(steamLogin.middleware(steamcfg));
 
+const checkAuth = function (req, res, next) {
+  const token = req.cookies.authToken;
+
+  return UserModel.find().then(usr => {
+      return usr.forEach(user => {
+          const check = user.checkToken(token);
+
+          if (check.err === null) return next();
+
+          return res.json({
+              auth: check.err === null ? "YES" : "NO",
+              sessionID: req.sessionID,
+              session: req.session,
+              cookie: req.cookies
+          });
+      });
+  })
+}
+
 router.get('/', (req, res) => {
   return res.json({
     sessionID: req.sessionID,
@@ -21,15 +40,15 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   const steamid = req.user._json.steamid;
 
   return UserModel.findOne({ steamid }).then(usr => {
-    devLog('MONGO','search user')
+    devLog('MONGO','-search user')
     let user;    
 
     if(usr){
-      devLog('MONGO','user found')
+      devLog('MONGO','--user found')
 
       user = usr;
     } else {
-      devLog('MONGO','user not found')
+      devLog('MONGO','--user not found')
 
       user = new UserModel({
         steamid: req.user._json.steamid,
@@ -67,6 +86,7 @@ router.get('/testAuth', (req, res) => {
     usr.forEach(user => {
       const check = user.checkToken(token);
       return res.json({
+        auth: check.err === null ? "YES" : "NO",
         token,
         check,
         sessionID: req.sessionID,
@@ -75,7 +95,6 @@ router.get('/testAuth', (req, res) => {
       });
     });
   })
-
 });
 
 router.get('/testSession', (req, res) => {
@@ -83,6 +102,12 @@ router.get('/testSession', (req, res) => {
 
   res.cookie('authToken', token);
   res.redirect('/auth');
+});
+
+router.get('/testAuth2', checkAuth, (req, res) => {
+  return res.json({
+    "auth" : "YES"
+  });
 });
 
 router.get('/logout', (req, res) => {
