@@ -11,18 +11,18 @@ const checkAuth = function (req, res, next) {
   const token = req.cookies.authToken;
 
   return UserModel.find().then(usr => {
-      return usr.forEach(user => {
-          const check = user.checkToken(token);
+    return usr.forEach(user => {
+      const check = user.checkToken(token);
 
-          if (check.err === null) return next();
+      if (check.err === null) return next();
 
-          return res.json({
-              auth: check.err === null ? "YES" : "NO",
-              sessionID: req.sessionID,
-              session: req.session,
-              cookie: req.cookies
-          });
+      return res.json({
+        auth: "NO",
+        sessionID: req.sessionID,
+        session: req.session,
+        cookie: req.cookies
       });
+    });
   })
 }
 
@@ -74,8 +74,8 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
     });
 
   }).catch(err => {
-    devLog('MONGO','error found');
-    devLog('MONGO',`{${err.name}} ${err.message}`);
+    devLog('MONGO','-error found');
+    devLog('MONGO',`-{${err.name}} ${err.message}`);
   });
 });
 
