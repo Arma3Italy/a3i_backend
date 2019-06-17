@@ -29,6 +29,7 @@ mongoose.connect(mongoUri, {
 
 app.use('/server',require('../api/server'));
 app.use('/auth',require('../api/auth'));
+app.use('/user',require('../api/user'));
 
 app.listen(port, () => {
     devLog('SERVER',`Server started on ${port}`);
