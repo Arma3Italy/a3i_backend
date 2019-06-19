@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const UserModel = require('../models/User.js');
+const { devLog } = require('../util');
+
+router.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 const checkAuth = function (req, res, next) {
     const token = req.cookies.authToken;
@@ -23,6 +32,19 @@ const checkAuth = function (req, res, next) {
 
 router.get('/', (req, res) => {
     res.json({ status: 'server ok' });
+});
+
+router.get('/:id', (req, res) => {
+    UserModel.findOne({ steamid: req.params.id }).then(user => {
+        if (!user) {
+            devLog('MONGO', 'User not found');
+            return res.status(404).json({ user: null });
+        }
+
+        return res.json({ user });
+    }).catch(() => {
+        return res.status(404).json({ user: null });
+    });
 });
 
 module.exports = router;
