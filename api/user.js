@@ -37,12 +37,14 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     UserModel.findOne({ steamid: req.params.id }).then(user => {
         if (!user) {
-            devLog('MONGO', 'User not found');
+            devLog('MONGO', 'search user - not found');
             return res.status(404).json({ user: null });
         }
+        devLog('MONGO', `search user - found > ${user.steamid}`);
 
         return res.json({ user });
     }).catch(() => {
+        devLog('MONGO', `search user - error`);
         return res.status(404).json({ user: null });
     });
 });
