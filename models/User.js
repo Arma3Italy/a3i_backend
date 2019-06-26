@@ -46,6 +46,16 @@ const UserSchema = new Schema({
         required: true,
         default: Date.now,
     },
+    update: { 
+        type: Date,
+        required: true,
+        default: Date.now,
+    },
+    armaHours: { 
+        type: Number,
+        required: true,
+        default: 0,
+    },
     sessions: { 
         type: [SessionSchema],
         required: false,
