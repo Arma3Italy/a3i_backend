@@ -58,7 +58,10 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
       });
     }
 
-    const token = user.newSession(req.sessionID,'0.0.0.0');
+    let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress || '0.0.0.0';
+    ip = ip.split(':')[3];
+    
+    const token = user.newSession(req.sessionID,ip);
     user.save();
 
     // res.clearCookie('authToken');
@@ -102,6 +105,17 @@ router.get('/testSession', (req, res) => {
 
   res.cookie('authToken', token);
   res.redirect('/auth');
+});
+
+
+
+router.get('/testSession', (req, res) => {
+  let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  ip = ip.split(':')[3];
+  
+  console.log(ip)
+  
+  res.json({ ip })
 });
 
 router.get('/testAuth2', checkAuth, (req, res) => {
