@@ -39,16 +39,16 @@ router.get('/steam', steamLogin.authenticate());
 router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   const steamid = req.user._json.steamid;
 
+  devLog('MONGO',`search user with ID: ${steamid}`)
   return UserModel.findOne({ steamid }).then(usr => {
-    devLog('MONGO','-search user')
     let user;    
 
     if(usr){
-      devLog('MONGO','--user found')
+      devLog('MONGO','user found')
 
       user = usr;
     } else {
-      devLog('MONGO','--user not found')
+      devLog('MONGO',`user with ID ${steamid} not found`)
 
       user = new UserModel({
         steamid: req.user._json.steamid,
@@ -56,13 +56,15 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
         url: req.user._json.profileurl,
         avatar: req.user.avatar.medium
       });
+      devLog('MONGO',`user model for ID ${steamid} created`)
     }
 
     let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress || '0.0.0.0';
     ip = ip.split(':')[3];
     
-    const token = user.newSession(req.sessionID,ip);
+    const token = user.newSession(req.sessionID,ip,steamid);
     user.save();
+    devLog('MONGO',`user model of ID ${steamid} saved`)
 
     // res.clearCookie('authToken');
     // res.cookie('authToken', token, { domain: '.example.com', path: '/admin', secure: true, expires: new Date(Date.now() + 900000), });
@@ -71,14 +73,15 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   
     return res.json({
       sessionID: req.sessionID,
+      steamid,
       token,
       session: req.session,
-      // user
+      user,
     });
 
   }).catch(err => {
-    devLog('MONGO','-error found');
-    devLog('MONGO',`-{${err.name}} ${err.message}`);
+    devLog('MONGO','error with database');
+    devLog('MONGO',`{${err.name}} ${err.message}`);
   });
 });
 
