@@ -18,8 +18,8 @@ app.use(session({
         // expires: new Date(Date.now() + 30000),
     }
 }));
-
 mongoose.connect(mongoUri, {
+    useUnifiedTopology: true,
     useNewUrlParser: true,
     useCreateIndex: true,
 }, (err) => {
