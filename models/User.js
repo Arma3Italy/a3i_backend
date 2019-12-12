@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { signsession } = require('../util');
+const { signsession, devLog } = require('../util');
 
 const SessionSchema = new Schema({
     token: {
@@ -8,6 +8,10 @@ const SessionSchema = new Schema({
         required: true,
         index: true,
         unique: true,
+    },
+    steamid: {
+        type: String,
+        required: true,
     },
     ip: {
         type: String,
@@ -62,16 +66,19 @@ const UserSchema = new Schema({
     },
 });
 
-UserSchema.methods.newSession = function (sessionID, ip) {
+UserSchema.methods.newSession = function (sessionID, ip, steamid) {
     const token = signsession(sessionID);
-
+    
     const session = new SessionModel({
         token,
+        steamid,
         ip,
     });
 
     this.sessions.push(session);
 
+    
+    devLog('MONGO',`new session for ID ${steamid} created`)
     return token;
 }
 
