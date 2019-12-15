@@ -20,9 +20,6 @@ const SessionSchema = new Schema({
 });
 
 const UserSchema = new Schema({
-    userID: {
-        type: mongoose.Schema.Types.Mixed,
-    },
     user_info: {
         steamid: {
             type: String,
