@@ -8,20 +8,16 @@ const { devLog } = require('../util');
 router.use(steamLogin.middleware(steamcfg));
 
 const checkAuth = function (req, res, next) {
-  const token = req.cookies.authToken;
+  [userID, token] = req.cookies.authToken.split('.');
 
-  return UserModel.find().then(usr => {
-    return usr.forEach(user => {
-      const check = user.checkToken(token);
+  return UserModel.findById(userID).then(user => {
+    const check = user.checkToken(token);
 
-      if (check.err === null) return next();
+    if (check.err === null) return next();
 
-      return res.json({
-        auth: "NO",
-        sessionID: req.sessionID,
-        session: req.session,
-        cookie: req.cookies
-      });
+    return res.json({
+      auth: "NO",
+      cookie: req.cookies,
     });
   })
 }
@@ -29,8 +25,7 @@ const checkAuth = function (req, res, next) {
 router.get('/', (req, res) => {
   return res.json({
     sessionID: req.sessionID,
-    session: req.session,
-    cookie: req.cookies
+    cookie: req.cookies,
   });
 });
 
@@ -51,10 +46,14 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
       devLog('MONGO',`user with ID ${steamid} not found`)
 
       user = new UserModel({
-        steamid: req.user._json.steamid,
-        name: req.user._json.personaname,
-        url: req.user._json.profileurl,
-        avatar: req.user.avatar.medium
+        user_info:{
+          steamid: req.user._json.steamid,
+          name: req.user._json.personaname,
+          url: req.user._json.profileurl,
+          avatar: req.user.avatar.medium,
+        },
+        signup_date: new Date(),
+        profileUpdate_date: new Date(),
       });
       devLog('MONGO',`user model for ID ${steamid} created`)
     }
@@ -66,18 +65,20 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
     user.save();
     devLog('MONGO',`user model of ID ${steamid} saved`)
 
-    // res.clearCookie('authToken');
-    // res.cookie('authToken', token, { domain: '.example.com', path: '/admin', secure: true, expires: new Date(Date.now() + 900000), });
-    res.cookie('authToken', token,);
+    const userInfoForCookie = `${user._id}.${token}`
+
+    res.clearCookie('authToken');
+    // res.cookie('authToken', userInfoForCookie, { 
+    //   domain: '.example.com', 
+    //   path: '/admin', 
+    //   secure: true, 
+    //   expires: new Date(Date.now() + 900000),
+    // });
+    res.cookie('authToken', userInfoForCookie,);
     // req.session.a3i_user = user;
-  
-    return res.json({
-      sessionID: req.sessionID,
-      steamid,
-      token,
-      session: req.session,
-      user,
-    });
+    devLog('MONGO',`added cookie {authToken: ${userInfoForCookie}} for user with ID ${steamid}`)
+
+    return res.json({ user });
 
   }).catch(err => {
     devLog('MONGO','error with database');
@@ -105,28 +106,18 @@ router.get('/testAuth', (req, res) => {
   })
 });
 
+router.get('/testAuth2', checkAuth, (req, res) => {
+  return res.json({
+    "auth" : "YES",
+    cookie: req.cookies,
+  });
+});
+
 router.get('/testSession', (req, res) => {
   const token = "sadfasdfasfasdfasdfsaf";
 
   res.cookie('authToken', token);
   res.redirect('/auth');
-});
-
-
-
-router.get('/testIP', (req, res) => {
-  let ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  ip = ip.split(':')[3];
-  
-  devLog('[/testIP]',ip)
-  
-  res.json({ ip })
-});
-
-router.get('/testAuth2', checkAuth, (req, res) => {
-  return res.json({
-    "auth" : "YES"
-  });
 });
 
 router.get('/logout', (req, res) => {
