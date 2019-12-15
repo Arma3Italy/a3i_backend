@@ -9,17 +9,24 @@ router.use(steamLogin.middleware(steamcfg));
 
 const checkAuth = function (req, res, next) {
   [userID, token] = req.cookies.authToken.split('.');
+  let errMsg = "Error unknown";
 
   return UserModel.findById(userID).then(user => {
     const check = user.checkToken(token);
 
     if (check.err === null) return next();
-
+    errMsg = check.err;
+  }).catch(err => {
+    console.log(err)
+    errMsg = "User not found"
+  }).finally(x => {
     return res.json({
       auth: "NO",
+      error: errMsg,
       cookie: req.cookies,
     });
-  })
+  });
+
 }
 
 router.get('/', (req, res) => {
@@ -114,7 +121,7 @@ router.get('/testAuth2', checkAuth, (req, res) => {
 });
 
 router.get('/testSession', (req, res) => {
-  const token = "sadfasdfasfasdfasdfsaf";
+  const token = "5df68e59e356ad12a86cfa86.sadfasdfasfasdfasdfsaf";
 
   res.cookie('authToken', token);
   res.redirect('/auth');
