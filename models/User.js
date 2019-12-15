@@ -9,54 +9,52 @@ const SessionSchema = new Schema({
         index: true,
         unique: true,
     },
-    steamid: {
-        type: String,
-        required: true,
-    },
     ip: {
         type: String,
         required: false,
     },
-    date: {
+    expire_date: {
         type: Date,
         required: true,
-        default: Date.now,
     },
 });
 
 const UserSchema = new Schema({
-    steamid: {
-        type: String,
-        required: true,
-        index: true,
-        unique: true,
+    userID: {
+        type: mongoose.Schema.Types.Mixed,
     },
-    name: {
-        type: String,
-        required: true,
+    user_info: {
+        steamid: {
+            type: String,
+            required: true,
+            index: true,
+            unique: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        url: {
+            type: String,
+            required: true,
+        },
+        avatar: {
+            type: String,
+            required: true,
+        },
+        armaHours: { 
+            type: Number,
+            required: true,
+            default: 0,
+        },
     },
-    url: {
-        type: String,
-        required: true,
-    },
-    avatar: {
-        type: String,
-        required: true,
-    },
-    date: { 
+    signup_date: { 
         type: Date,
         required: true,
-        default: Date.now,
     },
-    update: { 
+    profileUpdate_date: { 
         type: Date,
         required: true,
-        default: Date.now,
-    },
-    armaHours: { 
-        type: Number,
-        required: true,
-        default: 0,
     },
     sessions: { 
         type: [SessionSchema],
@@ -66,16 +64,17 @@ const UserSchema = new Schema({
 
 UserSchema.methods.newSession = function (sessionID, ip, steamid) {
     const token = signsession(sessionID);
-    
-    const session = new SessionSchema({
-        token,
-        steamid,
+    const date = new Date()
+    const expire_date = date.setDate(date.getDate() + 7)
+
+    const session = {
         ip,
-    });
+        token,
+        expire_date,
+    };
 
     this.sessions.push(session);
 
-    
     devLog('MONGO',`new session for ID ${steamid} created`)
     return token;
 }
