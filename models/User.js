@@ -78,9 +78,10 @@ UserSchema.methods.newSession = function (sessionID, ip, steamid) {
 
 UserSchema.methods.checkToken = function (token) {
     const session = this.sessions.filter(session => session.token === token);
-
-    if (session.length > 0) return { err: null, session, user: this };
-    return { err: 'No session found' };
+    
+    if (session.length < 1) return { err: 'Invalid token' };
+    else if (session[0].expire_date < new Date()) return { err: "Session expired" };
+    else return { err: null, session, user: this };
 }
 
 const UserModel = mongoose.model('User', UserSchema);
