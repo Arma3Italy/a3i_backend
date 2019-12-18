@@ -16,9 +16,11 @@ const checkAuth = function (req, res, next) {
 
     if (check.err === null) return next();
     errMsg = check.err;
+
   }).catch(err => {
     console.log(err)
     errMsg = "User not found"
+    
   }).finally(x => {
     return res.json({
       auth: "NO",
@@ -42,7 +44,7 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
   const steamid = req.user._json.steamid;
 
   devLog('MONGO',`search user with ID: ${steamid}`)
-  return UserModel.findOne({ steamid }).then(usr => {
+  return UserModel.findOne({ "user_info.steamid": steamid  }).then(usr => {
     let user;    
 
     if(usr){
@@ -52,7 +54,7 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
     } else {
       devLog('MONGO',`user with ID ${steamid} not found`)
 
-      user = new UserModel({
+      user = new UserModel({  
         user_info:{
           steamid: req.user._json.steamid,
           name: req.user._json.personaname,
@@ -83,7 +85,7 @@ router.get('/steam/return', steamLogin.verify(), (req, res, next) => {
     // });
     res.cookie('authToken', userInfoForCookie,);
     // req.session.a3i_user = user;
-    devLog('MONGO',`added cookie {authToken: ${userInfoForCookie}} for user with ID ${steamid}`)
+    devLog('MONGO',`added cookie for user with ID ${steamid}`)
 
     return res.json({ user });
 
